@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { optimizeSplitShipment } from "@/domain/crew/alchemist";
 import { PRESET_DEMO_CARTS, runGrimCourierCrew } from "@/domain/crew/dispatcher";
-import { cartItemSchema } from "@/domain/crew/schemas";
+import { LIMITS, cartItemSchema, cartSchema } from "@/domain/crew/schemas";
 import type {
   BoxTaxBreakdown,
   CartItem,
@@ -82,7 +82,8 @@ const T = {
     reportJson: "Reporte en vivo",
     nameLabel: "Nombre",
     langLabel: "Idioma",
-    invalid: "Datos inválidos: revisa nombre, peso, precio y cantidad.",
+    invalid: `Datos inválidos: nombre de 1 a ${LIMITS.maxNameLength} caracteres, peso entre 0 y ${LIMITS.maxUnitWeightKg} kg, precio entre $0 y $${LIMITS.maxUnitPriceUsd}, cantidad entera de 1 a ${LIMITS.maxQuantityPerItem}.`,
+    limit: `Límite del carrito: máximo ${LIMITS.maxItems} artículos y ${LIMITS.maxTotalUnits} unidades en total.`,
     items: "unidades",
   },
   en: {
@@ -138,7 +139,8 @@ const T = {
     reportJson: "Live report",
     nameLabel: "Name",
     langLabel: "Language",
-    invalid: "Invalid input: check name, weight, price and quantity.",
+    invalid: `Invalid input: name 1 to ${LIMITS.maxNameLength} characters, weight above 0 and up to ${LIMITS.maxUnitWeightKg} kg, price $0 to $${LIMITS.maxUnitPriceUsd}, whole quantity 1 to ${LIMITS.maxQuantityPerItem}.`,
+    limit: `Cart limit: at most ${LIMITS.maxItems} items and ${LIMITS.maxTotalUnits} units in total.`,
     items: "units",
   },
 } as const;
@@ -228,7 +230,7 @@ export default function Home() {
   const [activePreset, setActivePreset] = useState<PresetId | null>("oversized_haul");
   const [customCounter, setCustomCounter] = useState(1);
   const [form, setForm] = useState({ name: "", weight: "", price: "", qty: "1", category: "general" as ItemCategory });
-  const [formError, setFormError] = useState(false);
+  const [formError, setFormError] = useState<"invalid" | "limit" | null>(null);
   const [apiJson, setApiJson] = useState("");
   const [copyMsg, setCopyMsg] = useState("");
 
@@ -261,10 +263,15 @@ export default function Home() {
       category: form.category,
     });
     if (!parsed.success) {
-      setFormError(true);
+      setFormError("invalid");
       return;
     }
-    setFormError(false);
+    // Same cart-level limits as the API (item count and total expanded units).
+    if (!cartSchema.safeParse([...items, parsed.data]).success) {
+      setFormError("limit");
+      return;
+    }
+    setFormError(null);
     setItems((prev) => [...prev, parsed.data]);
     setCustomCounter((c) => c + 1);
     setActivePreset(null);
@@ -463,7 +470,7 @@ export default function Home() {
                   className={inputCls}
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  maxLength={120}
+                  maxLength={LIMITS.maxNameLength}
                 />
               </label>
               <label className="block min-w-0 text-xs text-violet-300">
@@ -514,7 +521,7 @@ export default function Home() {
               </button>
               {formError && (
                 <span role="alert" className="text-sm text-red-300">
-                  {t.invalid}
+                  {formError === "limit" ? t.limit : t.invalid}
                 </span>
               )}
             </div>
