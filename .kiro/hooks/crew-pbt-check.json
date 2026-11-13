@@ -1,0 +1,14 @@
+{
+  "enabled": false,
+  "name": "Crew PBT Check",
+  "description": "Runs the Vitest and fast-check suites when crew domain logic or tests change.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": ["src/domain/crew/**/*.ts", "src/__tests__/**/*.ts"]
+  },
+  "then": {
+    "type": "runCommand",
+    "command": "npx vitest run"
+  }
+}
