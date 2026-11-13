@@ -44,7 +44,17 @@ export function compareCouriersForBox(box: BoxTaxBreakdown): {
   }
   best.recommended = true;
 
-  const phantasmTrackUrl = `${PHANTASM_TRACK_BASE_URL}?weightKg=${box.totalWeightKg}&fobUsd=${box.totalFobUsd}&regime=${box.regime}`;
+  const names = box.items.slice(0, 3).map((i) => i.name).join(', ');
+  const params = new URLSearchParams({
+    fromCrew: '1',
+    boxIndex: String(box.boxIndex),
+    weightKg: String(box.totalWeightKg),
+    fobUsd: String(box.totalFobUsd),
+    regime: box.regime,
+    courier: best.courierId,
+    missionName: `Crew Box #${box.boxIndex}: ${names}${box.items.length > 3 ? '...' : ''}`,
+  });
+  const phantasmTrackUrl = `${PHANTASM_TRACK_BASE_URL}?${params.toString()}`;
   return { quotes, bestQuote: best, phantasmTrackUrl };
 }
 

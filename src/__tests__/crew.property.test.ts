@@ -159,3 +159,25 @@ describe('PRESET_DEMO_CARTS', () => {
     expect(runTariffInquisitor(PRESET_DEMO_CARTS.safe_micro_haul.items)).toHaveLength(0);
   });
 });
+
+describe('PhantasmTrack deep link', () => {
+  it('encodes box data, best courier and mission name as query params', () => {
+    const report = runGrimCourierCrew(PRESET_DEMO_CARTS.oversized_haul.items);
+    for (const route of report.agent3Dispatcher.boxRoutes) {
+      const box = report.agent2Alchemist.optimizedBoxes.find((b) => b.boxIndex === route.boxIndex)!;
+      const url = new URL(route.phantasmTrackUrl);
+
+      expect(url.origin).toBe('https://phantasm-track-hazel.vercel.app');
+      expect(url.searchParams.get('fromCrew')).toBe('1');
+      expect(url.searchParams.get('boxIndex')).toBe(String(box.boxIndex));
+      expect(url.searchParams.get('weightKg')).toBe(String(box.totalWeightKg));
+      expect(url.searchParams.get('fobUsd')).toBe(String(box.totalFobUsd));
+      expect(url.searchParams.get('regime')).toBe(box.regime);
+      expect(url.searchParams.get('courier')).toBe(route.bestQuote.courierId);
+
+      const mission = url.searchParams.get('missionName')!;
+      expect(mission.startsWith(`Crew Box #${box.boxIndex}: `)).toBe(true);
+      expect(mission.endsWith('...')).toBe(box.items.length > 3);
+    }
+  });
+});
