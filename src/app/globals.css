@@ -2,7 +2,7 @@
 
 :root {
   --background: #09070e;
-  --foreground: #e4e4e7;
+  --foreground: #e7e5e4;
   --crimson: #991b1b;
   --violet: #6d28d9;
   --amber: #fbbf24;
@@ -20,10 +20,24 @@ html {
   color-scheme: dark;
 }
 
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  /* `clip` contains overflow without creating a scroll container (where supported). */
+  overflow-x: clip;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
 ::selection {
@@ -39,6 +53,7 @@ body {
 code {
   font-family: var(--font-geist-mono), monospace;
   color: #c4b5fd;
+  overflow-wrap: anywhere;
 }
 
 @media (prefers-reduced-motion: reduce) {

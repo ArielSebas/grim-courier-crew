@@ -152,11 +152,18 @@ const MCP_TOOL_IDS = [
   "run_grim_courier_crew",
 ];
 
-const panel = "rounded-xl border border-violet-900/50 bg-[#110d1c]/80 p-5 shadow-lg shadow-black/40";
+// Shared class names. Every card is `min-w-0` so long content can never widen its parent.
+const panel =
+  "w-full min-w-0 overflow-hidden rounded-xl border border-purple-900/40 bg-[#120d1d]/90 p-4 sm:p-6 shadow-lg shadow-black/40";
+const sectionTitle = "font-display mb-3 text-lg text-amber-300 break-words";
 const inputCls =
-  "w-full rounded-md border border-violet-900/60 bg-[#0d0916] px-2 py-1.5 text-sm text-zinc-100 placeholder:text-zinc-500";
+  "block w-full min-w-0 rounded-md border border-violet-900/60 bg-[#0d0916] px-2 py-1.5 text-sm text-stone-100 placeholder:text-stone-500";
 const btnCls =
-  "rounded-lg border border-violet-700/60 bg-violet-950/60 px-4 py-2 text-left text-sm font-medium text-violet-100 transition hover:border-amber-400/70 hover:bg-violet-900/60";
+  "rounded-lg border border-violet-700/60 bg-violet-950/60 px-4 py-2 text-sm font-medium text-violet-100 transition hover:border-amber-400/70 hover:bg-violet-900/60";
+const ctaCls =
+  "inline-block rounded-lg bg-gradient-to-r from-red-800 to-violet-800 px-4 py-2 text-center text-sm font-semibold text-amber-100 hover:from-red-700 hover:to-violet-700";
+const th = "px-2 py-2 font-semibold";
+const td = "px-2 py-2";
 
 function severityCls(a: SenaeAlert) {
   return a.severity === "CRITICAL"
@@ -170,12 +177,20 @@ function groupUnits(box: BoxTaxBreakdown) {
   return [...counts.entries()].map(([name, n]) => (n > 1 ? `${name} ×${n}` : name));
 }
 
+function CategoryBadge({ category }: { category: ItemCategory }) {
+  return (
+    <span className="inline-block max-w-full break-all rounded-full border border-violet-800/60 bg-violet-950/60 px-2 py-0.5 text-xs text-violet-200">
+      {category}
+    </span>
+  );
+}
+
 function RegimeBadge({ box, lang }: { box: BoxTaxBreakdown; lang: Lang }) {
   const t = T[lang];
   const exempt = box.regime === "4X4_EXEMPT";
   return (
     <span
-      className={`rounded-full border px-2 py-0.5 text-xs font-bold ${
+      className={`shrink-0 rounded-full border px-2 py-0.5 text-xs font-bold ${
         exempt
           ? "border-emerald-600/60 bg-emerald-950/50 text-emerald-300"
           : "border-red-600/60 bg-red-950/50 text-red-300"
@@ -189,18 +204,18 @@ function RegimeBadge({ box, lang }: { box: BoxTaxBreakdown; lang: Lang }) {
 function BoxCard({ box, lang }: { box: BoxTaxBreakdown; lang: Lang }) {
   const t = T[lang];
   return (
-    <div className="rounded-lg border border-violet-900/40 bg-[#0d0916] p-3 text-sm">
+    <div className="min-w-0 rounded-lg border border-violet-900/40 bg-[#0d0916] p-3 text-sm">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <strong className="text-amber-300">
           {t.box} {box.boxIndex}
         </strong>
         <RegimeBadge box={box} lang={lang} />
       </div>
-      <p className="mt-2 text-zinc-300">{groupUnits(box).join(", ")}</p>
-      <p className="mt-1 text-zinc-400">
+      <p className="mt-2 break-words text-stone-300">{groupUnits(box).join(", ")}</p>
+      <p className="mt-1 text-stone-400">
         {box.totalWeightKg} kg / {box.totalWeightLb} lb · FOB {usd(box.totalFobUsd)}
       </p>
-      <p className="mt-1 font-semibold text-zinc-100">
+      <p className="mt-1 font-semibold text-stone-100">
         {t.taxes}: {usd(box.totalTaxesUsd)}
       </p>
     </div>
@@ -284,15 +299,28 @@ export default function Home() {
       ]
     : [];
 
+  const removeButton = (i: CartItem) => (
+    <button
+      type="button"
+      onClick={() => removeItem(i.id)}
+      aria-label={`${t.remove} ${i.name}`}
+      className="shrink-0 rounded border border-red-800/70 px-2 py-1 text-xs text-red-300 hover:bg-red-950"
+    >
+      {t.remove}
+    </button>
+  );
+
   return (
-    <div className="min-h-screen bg-[#09070e] text-zinc-200">
-      <header className="sticky top-0 z-10 border-b border-violet-900/50 bg-[#09070e]/95 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3">
-          <div>
-            <h1 className="font-display text-xl font-bold tracking-wide text-amber-300 sm:text-2xl">{t.title}</h1>
-            <p className="text-xs text-violet-300/80">{t.subtitle}</p>
+    <div className="min-h-screen w-full overflow-x-hidden bg-[#09070e] text-stone-100">
+      <header className="w-full border-b border-violet-900/50 bg-[#09070e]">
+        <div className="mx-auto flex w-full max-w-5xl flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
+          <div className="min-w-0">
+            <h1 className="font-display break-words text-xl font-bold tracking-wide text-amber-300 sm:text-2xl">
+              {t.title}
+            </h1>
+            <p className="break-words text-xs text-violet-300/80">{t.subtitle}</p>
           </div>
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex shrink-0 flex-wrap items-center gap-3">
             <div role="group" aria-label={t.langLabel} className="flex overflow-hidden rounded-lg border border-violet-700/60">
               {(["es", "en"] as const).map((l) => (
                 <button
@@ -308,24 +336,20 @@ export default function Home() {
                 </button>
               ))}
             </div>
-            <a
-              href={PHANTASM_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-lg bg-gradient-to-r from-red-800 to-violet-800 px-4 py-2 text-sm font-semibold text-amber-100 hover:from-red-700 hover:to-violet-700"
-            >
+            <a href={PHANTASM_URL} target="_blank" rel="noopener noreferrer" className={ctaCls}>
               {t.openGrimoire}
             </a>
           </div>
         </div>
       </header>
 
-      <main className="mx-auto grid max-w-6xl gap-6 px-4 py-6">
+      <main className="mx-auto w-full max-w-5xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+        {/* Demo scenarios */}
         <section className={panel} aria-labelledby="presets-h">
-          <h2 id="presets-h" className="font-display mb-3 text-lg text-amber-300">
+          <h2 id="presets-h" className={sectionTitle}>
             {t.presets}
           </h2>
-          <div className="grid gap-2 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
             {(
               [
                 ["oversized_haul", t.demo1],
@@ -338,7 +362,9 @@ export default function Home() {
                 type="button"
                 onClick={() => loadPreset(id)}
                 aria-pressed={activePreset === id}
-                className={`${btnCls} ${activePreset === id ? "border-amber-400 ring-1 ring-amber-400/60" : ""}`}
+                className={`w-full min-w-0 whitespace-normal break-words rounded-lg border bg-violet-950/60 p-3.5 text-left text-sm font-medium text-violet-100 transition-all hover:border-amber-400/70 hover:bg-violet-900/60 ${
+                  activePreset === id ? "border-amber-400 ring-1 ring-amber-400/60" : "border-violet-700/60"
+                }`}
               >
                 {label}
               </button>
@@ -346,88 +372,143 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Cart */}
         <section className={panel} aria-labelledby="cart-h">
-          <h2 id="cart-h" className="font-display mb-3 text-lg text-amber-300">
+          <h2 id="cart-h" className={sectionTitle}>
             {t.cart}
           </h2>
+
           {items.length === 0 ? (
-            <p className="text-zinc-400">{t.emptyCart}</p>
+            <p className="text-stone-400">{t.emptyCart}</p>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm">
-                <thead className="text-violet-300">
-                  <tr>
-                    <th className="py-1 pr-3">{t.colName}</th>
-                    <th className="py-1 pr-3">{t.colWeight}</th>
-                    <th className="py-1 pr-3">{t.colPrice}</th>
-                    <th className="py-1 pr-3">{t.colQty}</th>
-                    <th className="py-1 pr-3">{t.colCategory}</th>
-                    <th className="py-1" />
-                  </tr>
-                </thead>
-                <tbody>
-                  {items.map((i) => (
-                    <tr key={i.id} className="border-t border-violet-900/30">
-                      <td className="py-1.5 pr-3">{i.name}</td>
-                      <td className="pr-3">{i.unitWeightKg}</td>
-                      <td className="pr-3">{usd(i.unitPriceUsd)}</td>
-                      <td className="pr-3">{i.quantity}</td>
-                      <td className="pr-3 text-zinc-400">{i.category}</td>
-                      <td>
-                        <button
-                          type="button"
-                          onClick={() => removeItem(i.id)}
-                          aria-label={`${t.remove} ${i.name}`}
-                          className="rounded border border-red-800/70 px-2 py-0.5 text-xs text-red-300 hover:bg-red-950"
-                        >
-                          {t.remove}
-                        </button>
-                      </td>
+            <>
+              {/* Mobile: one card per item */}
+              <ul className="space-y-2 md:hidden">
+                {items.map((i) => (
+                  <li key={i.id} className="min-w-0 rounded-lg border border-violet-900/40 bg-[#0d0916] p-3">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <p className="break-words font-semibold text-stone-100">{i.name}</p>
+                        <div className="mt-1">
+                          <CategoryBadge category={i.category} />
+                        </div>
+                      </div>
+                      {removeButton(i)}
+                    </div>
+                    <dl className="mt-2 grid grid-cols-3 gap-2 text-xs">
+                      <div className="min-w-0">
+                        <dt className="text-violet-300">{t.colWeight}</dt>
+                        <dd>{i.unitWeightKg}</dd>
+                      </div>
+                      <div className="min-w-0">
+                        <dt className="text-violet-300">{t.colPrice}</dt>
+                        <dd>{usd(i.unitPriceUsd)}</dd>
+                      </div>
+                      <div className="min-w-0">
+                        <dt className="text-violet-300">{t.colQty}</dt>
+                        <dd>{i.quantity}</dd>
+                      </div>
+                    </dl>
+                  </li>
+                ))}
+              </ul>
+
+              {/* Desktop: contained table */}
+              <div className="hidden w-full overflow-x-auto md:block">
+                <table className="w-full table-auto text-left text-sm">
+                  <thead className="text-violet-300">
+                    <tr>
+                      <th className={th}>{t.colName}</th>
+                      <th className={th}>{t.colWeight}</th>
+                      <th className={th}>{t.colPrice}</th>
+                      <th className={th}>{t.colQty}</th>
+                      <th className={th}>{t.colCategory}</th>
+                      <th className={th}>
+                        <span className="sr-only">{t.remove}</span>
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {items.map((i) => (
+                      <tr key={i.id} className="border-t border-violet-900/30">
+                        <td className={`${td} break-words`}>{i.name}</td>
+                        <td className={td}>{i.unitWeightKg}</td>
+                        <td className={td}>{usd(i.unitPriceUsd)}</td>
+                        <td className={td}>{i.quantity}</td>
+                        <td className={td}>
+                          <CategoryBadge category={i.category} />
+                        </td>
+                        <td className={`${td} text-right`}>{removeButton(i)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
           )}
+
           {report && (
-            <p className="mt-3 text-sm text-violet-200">
+            <p className="mt-3 break-words text-sm text-violet-200">
               {t.totals}: {report.totalItemsCount} {t.items} · {report.totalWeightKg} kg · {usd(report.totalFobUsd)} FOB
             </p>
           )}
 
-          <form onSubmit={addItem} className="mt-4 grid gap-2 border-t border-violet-900/40 pt-4 sm:grid-cols-6">
-            <h3 className="sm:col-span-6 text-sm font-semibold text-violet-200">{t.addItem}</h3>
-            <label className="sm:col-span-2 text-xs text-violet-300">
-              {t.nameLabel}
-              <input className={inputCls} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} maxLength={120} />
-            </label>
-            <label className="text-xs text-violet-300">
-              {t.colWeight}
-              <input className={inputCls} inputMode="decimal" value={form.weight} onChange={(e) => setForm({ ...form, weight: e.target.value })} />
-            </label>
-            <label className="text-xs text-violet-300">
-              {t.colPrice}
-              <input className={inputCls} inputMode="decimal" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} />
-            </label>
-            <label className="text-xs text-violet-300">
-              {t.colQty}
-              <input className={inputCls} inputMode="numeric" value={form.qty} onChange={(e) => setForm({ ...form, qty: e.target.value })} />
-            </label>
-            <label className="text-xs text-violet-300">
-              {t.colCategory}
-              <select
-                className={inputCls}
-                value={form.category}
-                onChange={(e) => setForm({ ...form, category: e.target.value as ItemCategory })}
-              >
-                {CATEGORIES.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <div className="sm:col-span-6 flex items-center gap-3">
+          {/* Add custom item */}
+          <form onSubmit={addItem} className="mt-4 border-t border-violet-900/40 pt-4">
+            <h3 className="mb-3 text-sm font-semibold text-violet-200">{t.addItem}</h3>
+            <div className="grid grid-cols-1 items-end gap-3 sm:grid-cols-2 lg:grid-cols-6">
+              <label className="block min-w-0 text-xs text-violet-300 sm:col-span-2 lg:col-span-2">
+                {t.nameLabel}
+                <input
+                  className={inputCls}
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  maxLength={120}
+                />
+              </label>
+              <label className="block min-w-0 text-xs text-violet-300">
+                {t.colWeight}
+                <input
+                  className={inputCls}
+                  inputMode="decimal"
+                  value={form.weight}
+                  onChange={(e) => setForm({ ...form, weight: e.target.value })}
+                />
+              </label>
+              <label className="block min-w-0 text-xs text-violet-300">
+                {t.colPrice}
+                <input
+                  className={inputCls}
+                  inputMode="decimal"
+                  value={form.price}
+                  onChange={(e) => setForm({ ...form, price: e.target.value })}
+                />
+              </label>
+              <label className="block min-w-0 text-xs text-violet-300">
+                {t.colQty}
+                <input
+                  className={inputCls}
+                  inputMode="numeric"
+                  value={form.qty}
+                  onChange={(e) => setForm({ ...form, qty: e.target.value })}
+                />
+              </label>
+              <label className="block min-w-0 text-xs text-violet-300">
+                {t.colCategory}
+                <select
+                  className={inputCls}
+                  value={form.category}
+                  onChange={(e) => setForm({ ...form, category: e.target.value as ItemCategory })}
+                >
+                  {CATEGORIES.map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+            <div className="mt-3 flex flex-wrap items-center gap-3">
               <button type="submit" className={btnCls}>
                 {t.add}
               </button>
@@ -441,14 +522,15 @@ export default function Home() {
         </section>
 
         {report && (
-          <div aria-live="polite" className="grid gap-6">
+          <div aria-live="polite" className="w-full min-w-0 space-y-6">
+            {/* Execution trace */}
             <section className={panel} aria-labelledby="trace-h">
-              <h2 id="trace-h" className="font-display mb-2 text-lg text-amber-300">
+              <h2 id="trace-h" className={sectionTitle}>
                 {t.trace}
               </h2>
               <ol className="space-y-1 font-mono text-xs text-violet-200">
                 {trace.map((line, idx) => (
-                  <li key={idx}>
+                  <li key={idx} className="break-words">
                     <span className="text-emerald-400">✔</span> {line}
                   </li>
                 ))}
@@ -457,12 +539,12 @@ export default function Home() {
 
             {/* Agent 1 */}
             <section className={panel} aria-labelledby="a1-h">
-              <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                <h2 id="a1-h" className="font-display text-lg text-amber-300">
+              <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <h2 id="a1-h" className="font-display min-w-0 break-words text-lg text-amber-300">
                   {t.a1} <code className="text-xs text-violet-400">tariff-inquisitor</code>
                 </h2>
                 <span
-                  className={`rounded-full border px-3 py-0.5 text-xs font-bold ${
+                  className={`self-start rounded-full border px-3 py-0.5 text-xs font-bold sm:self-auto ${
                     report.agent1Inquisitor.status === "CLEAR"
                       ? "border-emerald-600/60 bg-emerald-950/50 text-emerald-300"
                       : "border-amber-500/60 bg-amber-950/50 text-amber-200"
@@ -472,11 +554,14 @@ export default function Home() {
                 </span>
               </div>
               {report.agent1Inquisitor.alerts.length === 0 ? (
-                <p className="text-zinc-400">{t.noAlerts}</p>
+                <p className="text-stone-400">{t.noAlerts}</p>
               ) : (
-                <ul className="grid gap-2">
+                <ul className="grid grid-cols-1 gap-2">
                   {report.agent1Inquisitor.alerts.map((a, idx) => (
-                    <li key={`${a.itemId}-${a.code}-${idx}`} className={`rounded-lg border p-3 text-sm ${severityCls(a)}`}>
+                    <li
+                      key={`${a.itemId}-${a.code}-${idx}`}
+                      className={`min-w-0 break-words rounded-lg border p-3 text-sm ${severityCls(a)}`}
+                    >
                       <div className="mb-1 flex flex-wrap gap-2 text-xs font-bold">
                         <span>{a.severity}</span>
                         <code>{a.code}</code>
@@ -490,17 +575,17 @@ export default function Home() {
 
             {/* Agent 2 */}
             <section className={panel} aria-labelledby="a2-h">
-              <h2 id="a2-h" className="font-display mb-3 text-lg text-amber-300">
+              <h2 id="a2-h" className={sectionTitle}>
                 {t.a2} <code className="text-xs text-violet-400">split-shipment-alchemist</code>
               </h2>
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="rounded-lg border border-red-900/60 bg-red-950/20 p-3">
+              <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                <div className="min-w-0 rounded-lg border border-red-900/60 bg-red-950/20 p-3">
                   <h3 className="mb-2 text-sm font-semibold text-red-300">{t.single}</h3>
                   <BoxCard box={report.agent2Alchemist.singleBoxBaseline} lang={lang} />
                 </div>
-                <div className="rounded-lg border border-emerald-900/60 bg-emerald-950/20 p-3">
+                <div className="min-w-0 rounded-lg border border-emerald-900/60 bg-emerald-950/20 p-3">
                   <h3 className="mb-2 text-sm font-semibold text-emerald-300">{t.split}</h3>
-                  <div className="grid gap-2">
+                  <div className="grid grid-cols-1 gap-2">
                     {report.agent2Alchemist.optimizedBoxes.map((b) => (
                       <BoxCard key={b.boxIndex} box={b} lang={lang} />
                     ))}
@@ -512,20 +597,20 @@ export default function Home() {
                   ? `${usd(report.agent2Alchemist.netSavingsUsd)} ${t.saved}`
                   : t.noSavings}
               </p>
-              <p className="mt-1 text-center text-sm text-zinc-400">
+              <p className="mt-1 break-words text-center text-sm text-stone-400">
                 {lang === "es" ? report.agent2Alchemist.explanationEs : report.agent2Alchemist.explanationEn}
               </p>
             </section>
 
             {/* Agent 3 */}
             <section className={panel} aria-labelledby="a3-h">
-              <h2 id="a3-h" className="font-display mb-3 text-lg text-amber-300">
+              <h2 id="a3-h" className={sectionTitle}>
                 {t.a3} <code className="text-xs text-violet-400">route-dispatcher</code>
               </h2>
-              <div className="grid gap-4">
+              <div className="space-y-4">
                 {report.agent3Dispatcher.boxRoutes.map((r) => (
-                  <div key={r.boxIndex} className="rounded-lg border border-violet-900/40 bg-[#0d0916] p-3">
-                    <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                  <div key={r.boxIndex} className="min-w-0 rounded-lg border border-violet-900/40 bg-[#0d0916] p-3">
+                    <div className="mb-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                       <strong className="text-amber-300">
                         {t.box} {r.boxIndex}
                       </strong>
@@ -533,20 +618,20 @@ export default function Home() {
                         href={r.phantasmTrackUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="rounded-lg bg-gradient-to-r from-red-800 to-violet-800 px-3 py-1.5 text-sm font-semibold text-amber-100 hover:from-red-700 hover:to-violet-700"
+                        className={`${ctaCls} w-full sm:w-auto`}
                       >
                         {t.send}
                       </a>
                     </div>
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-left text-sm">
+                    <div className="w-full overflow-x-auto">
+                      <table className="w-full table-auto text-left text-xs sm:text-sm">
                         <thead className="text-violet-300">
                           <tr>
-                            <th className="py-1 pr-3">{t.courier}</th>
-                            <th className="pr-3">{t.freight}</th>
-                            <th className="pr-3">{t.customs}</th>
-                            <th className="pr-3">{t.landed}</th>
-                            <th>{t.days}</th>
+                            <th className={th}>{t.courier}</th>
+                            <th className={th}>{t.freight}</th>
+                            <th className={th}>{t.customs}</th>
+                            <th className={th}>{t.landed}</th>
+                            <th className={th}>{t.days}</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -555,16 +640,18 @@ export default function Home() {
                               key={q.courierId}
                               className={`border-t border-violet-900/30 ${q.recommended ? "text-amber-200" : ""}`}
                             >
-                              <td className="py-1.5 pr-3">
+                              <td className={td}>
                                 {q.courierName}{" "}
                                 {q.recommended && (
-                                  <span className="rounded bg-amber-900/60 px-1.5 text-xs font-bold">{t.best}</span>
+                                  <span className="whitespace-nowrap rounded bg-amber-900/60 px-1.5 text-xs font-bold">
+                                    {t.best}
+                                  </span>
                                 )}
                               </td>
-                              <td className="pr-3">{usd(q.freightUsd)}</td>
-                              <td className="pr-3">{usd(q.customsTaxesUsd)}</td>
-                              <td className="pr-3 font-semibold">{usd(q.totalLandedCostUsd)}</td>
-                              <td>{q.estimatedDays}</td>
+                              <td className={td}>{usd(q.freightUsd)}</td>
+                              <td className={td}>{usd(q.customsTaxesUsd)}</td>
+                              <td className={`${td} font-semibold`}>{usd(q.totalLandedCostUsd)}</td>
+                              <td className={`${td} whitespace-nowrap`}>{q.estimatedDays}</td>
                             </tr>
                           ))}
                         </tbody>
@@ -573,20 +660,21 @@ export default function Home() {
                   </div>
                 ))}
               </div>
-              <p className="mt-3 text-sm text-zinc-300">
+              <p className="mt-3 break-words text-sm text-stone-300">
                 {lang === "es" ? report.agent3Dispatcher.summaryEs : report.agent3Dispatcher.summaryEn}
               </p>
             </section>
           </div>
         )}
 
+        {/* Kiro Crew & MCP Inspector */}
         <section className={panel} aria-labelledby="insp-h">
-          <h2 id="insp-h" className="font-display mb-3 text-lg text-amber-300">
+          <h2 id="insp-h" className={sectionTitle}>
             {t.inspector}
           </h2>
-          <div className="grid gap-4 text-sm md:grid-cols-4">
-            <div>
-              <h3 className="mb-1 font-semibold text-violet-300">{t.agents}</h3>
+          <div className="grid grid-cols-1 gap-4 text-sm sm:grid-cols-2 lg:grid-cols-4">
+            <div className="min-w-0">
+              <h3 className="mb-1 break-words font-semibold text-violet-300">{t.agents}</h3>
               <ul className="space-y-1">
                 {AGENT_IDS.map((a) => (
                   <li key={a}>
@@ -595,8 +683,8 @@ export default function Home() {
                 ))}
               </ul>
             </div>
-            <div>
-              <h3 className="mb-1 font-semibold text-violet-300">{t.skills}</h3>
+            <div className="min-w-0">
+              <h3 className="mb-1 break-words font-semibold text-violet-300">{t.skills}</h3>
               <ul className="space-y-1">
                 {SKILL_IDS.map((s) => (
                   <li key={s}>
@@ -605,8 +693,8 @@ export default function Home() {
                 ))}
               </ul>
             </div>
-            <div>
-              <h3 className="mb-1 font-semibold text-violet-300">{t.tools}</h3>
+            <div className="min-w-0">
+              <h3 className="mb-1 break-words font-semibold text-violet-300">{t.tools}</h3>
               <ul className="space-y-1">
                 {MCP_TOOL_IDS.map((m) => (
                   <li key={m}>
@@ -615,10 +703,10 @@ export default function Home() {
                 ))}
               </ul>
             </div>
-            <div>
-              <h3 className="mb-1 font-semibold text-violet-300">{t.command}</h3>
+            <div className="min-w-0">
+              <h3 className="mb-1 break-words font-semibold text-violet-300">{t.command}</h3>
               <code>optimize-4x4-cart</code>
-              <p className="mt-1 text-zinc-400">Optimize SENAE 4x4 Cart Split</p>
+              <p className="mt-1 text-stone-400">Optimize SENAE 4x4 Cart Split</p>
             </div>
           </div>
           <div className="mt-4 flex flex-wrap items-center gap-3">
@@ -635,14 +723,14 @@ export default function Home() {
           <pre
             tabIndex={0}
             aria-label={t.reportJson}
-            className="mt-3 max-h-80 overflow-auto rounded-lg border border-violet-900/40 bg-[#0d0916] p-3 text-xs text-violet-100"
+            className="mt-3 max-h-80 w-full max-w-full overflow-x-auto overflow-y-auto rounded-lg border border-violet-900/40 bg-[#0d0916] p-3 text-xs text-violet-100"
           >
             {apiJson || (report ? JSON.stringify(report, null, 2) : "")}
           </pre>
         </section>
       </main>
 
-      <footer className="border-t border-violet-900/40 py-4 text-center text-xs text-zinc-500">
+      <footer className="border-t border-violet-900/40 py-4 text-center text-xs text-stone-500">
         GrimCourier Crew · MIT · Kiroween 2026
       </footer>
     </div>
