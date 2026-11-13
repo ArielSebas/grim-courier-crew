@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="GrimCourier Crew">
+  <defs>
+    <linearGradient id="shield" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4c1d95"/>
+      <stop offset="1" stop-color="#7f1d1d"/>
+    </linearGradient>
+  </defs>
+  <path d="M32 3 56 11v20c0 14-10 24-24 30C18 55 8 45 8 31V11z" fill="url(#shield)" stroke="#fbbf24" stroke-width="2"/>
+  <!-- raven wings -->
+  <path d="M10 22c6-2 11 0 14 5-6-1-10 0-14-5zM54 22c-6-2-11 0-14 5 6-1 10 0 14-5z" fill="#0b0712"/>
+  <!-- skull -->
+  <circle cx="32" cy="24" r="7" fill="#f5f0e1"/>
+  <rect x="28" y="28" width="8" height="5" rx="1" fill="#f5f0e1"/>
+  <circle cx="29.5" cy="24" r="1.8" fill="#09070e"/>
+  <circle cx="34.5" cy="24" r="1.8" fill="#09070e"/>
+  <!-- golden balance scale -->
+  <g stroke="#fbbf24" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M32 33v16M26 49h12M18 37h28"/>
+    <path d="M18 37l-4 8h8zM46 37l-4 8h8z"/>
+  </g>
+</svg>

@@ -1,12 +1,12 @@
 # Implementation Plan
 
-- [ ] 1. Project scaffolding
+- [x] 1. Project scaffolding
   - Next.js App Router, React 19, TypeScript strict, Tailwind v4, Vitest, fast-check, MCP SDK
   - _Requirements: 6, 7, 8_
 
 - [x] 2. Domain core: types, constants, round2, ingestion
   - [x] 2.1 Implement `round2`, constants and lb to kg conversion
-  - [x] 2.2 Implement cart validation and normalization
+  - [x] 2.2 Implement cart validation and normalization (`schemas.ts`)
   - _Requirements: 1_
 
 - [x] 3. Agent 1: Tariff Inquisitor
@@ -23,16 +23,20 @@
   - [x] 5.2 Unsplittable handling and net savings
   - _Requirements: 4_
 
-- [ ] 6. Agent 3: Route Dispatcher and MCP Gateway
+- [x] 6. Agent 3: Route Dispatcher and MCP Gateway
   - [x] 6.1 Courier comparison (Temu Direct, LaarBox, Upper)
   - [x] 6.2 Manifest export and PhantasmTrack deep link
-  - [ ] 6.3 MCP server tools and Kiro Crew manifest in `mcp-server/`
+  - [x] 6.3 MCP server tools in `mcp-server/index.ts`
+  - [x] 6.4 Kiro Crew `app.json` manifest, 3 agents in `agents/`, 2 skills in `skills/`
+  - [x] 6.5 API route `src/app/api/crew/route.ts` (GET summary, POST run)
+  - [x] 6.6 Register MCP server in `.kiro/settings/mcp.json`
   - _Requirements: 5, 6_
 
-- [ ] 7. Command Center UI
-  - [ ] 7.1 ES/EN i18n and gothic theme
-  - [ ] 7.2 Preset carts and cart editor
-  - [ ] 7.3 Real-time execution trace and result panels
+- [x] 7. Command Center UI
+  - [x] 7.1 ES/EN i18n and gothic theme
+  - [x] 7.2 Preset carts and cart editor
+  - [x] 7.3 Real-time execution trace and result panels
+  - [x] 7.4 Kiro Crew bundle `ui/dist/index.mjs`, favicon `src/app/icon.svg`
   - _Requirements: 7_
 
 - [x] 8. Property-Based Tests
@@ -41,3 +45,7 @@
   - [x] 8.3 P3 Tax determinism, non-negativity, round2 precision
   - [x] 8.4 Example tests for restrictions and courier ordering
   - _Requirements: 8_
+
+- [x] 9. Documentation
+  - [x] 9.1 `README.md` for the Kiroween 2026 judges
+  - [x] 9.2 MIT `LICENSE`

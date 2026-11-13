@@ -1,0 +1,77 @@
+{
+  "name": "grim-courier-crew",
+  "version": "1.0.0",
+  "displayName": "GrimCourier Crew · SENAE 4x4 Split-Shipment Oracle",
+  "description": "Multi-agent customs intelligence crew and mathematical 4x4 split-shipment optimizer for Ecuadorian imports, integrated with PhantasmTrack.",
+  "author": "ArielSebas",
+  "license": "MIT",
+  "minKiroCrewVersion": "0.1.0",
+  "repo": "https://github.com/ArielSebas/grim-courier-crew",
+  "tags": ["customs", "ecuador", "senae-4x4", "logistics", "mcp", "multi-agent", "kiroween"],
+  "highlights": [
+    "Agent 1, the Tariff Inquisitor, flags ARCSA and ARCOTEL restrictions, commercial quantities and units over 4x4 limits.",
+    "Agent 2, the Split-Shipment Alchemist, packs oversized carts into 4x4 boxes with exact net USD savings, verified by fast-check property tests.",
+    "Agent 3, the Route Dispatcher, compares Temu Direct, LaarBox and Upper per box and exports manifests to PhantasmTrack.",
+    "A built-in MCP server exposes all four crew tools to any Kiro Crew agent."
+  ],
+  "resources": "gateway",
+  "lifecycle": "gateway",
+  "agents": [
+    "agents/tariff-inquisitor.json",
+    "agents/split-shipment-alchemist.json",
+    "agents/route-dispatcher.json"
+  ],
+  "skills": ["skills/senae-4x4-customs", "skills/split-shipment-optimizer"],
+  "mcpServers": {
+    "grim-courier-mcp": {
+      "command": "npx",
+      "args": ["tsx", "mcp-server/index.ts"]
+    }
+  },
+  "crons": [
+    {
+      "name": "quota-mana-audit",
+      "cron_expr": "0 9 * * 1-5",
+      "message": "Audit active international shipments against the SENAE 4x4 (4kg / $400 USD) and $1,600 annual cap, and recommend split-shipment optimizations.",
+      "agent": "split-shipment-alchemist",
+      "enabled": true
+    }
+  ],
+  "ui": {
+    "entry": "ui/dist/index.mjs",
+    "pages": [{ "route": "/apps/grim-courier-crew", "label": "GrimCourier Crew", "icon": "Package" }],
+    "sidebar": { "section": "Apps", "order": 10 }
+  },
+  "contributes": {
+    "commands": [
+      {
+        "id": "optimize-4x4-cart",
+        "title": "Optimize SENAE 4x4 Cart Split",
+        "subtitle": "Run the 3-agent GrimCourier Crew on an import haul",
+        "icon": "Scale",
+        "keywords": ["customs", "senae", "4x4", "ecuador", "temu", "laarbox"],
+        "prompt": "Analyze and split this international cart under Ecuador SENAE 4x4 rules: {argument}",
+        "autoSend": true,
+        "argument": {
+          "kind": "text",
+          "placeholder": "e.g., 8 items totaling 5.8 kg and $460 USD FOB",
+          "hint": "Describe your international shopping cart weight and value"
+        }
+      }
+    ]
+  },
+  "permissions": {
+    "api": ["/api/status", "/api/crons", "/api/agents"],
+    "events": ["notification"],
+    "mcpTools": [
+      "analyze_cart_senae",
+      "optimize_split_shipment",
+      "compare_ecuador_couriers",
+      "run_grim_courier_crew"
+    ],
+    "storage": true,
+    "cron": true,
+    "memory": "app-scoped",
+    "network": false
+  }
+}

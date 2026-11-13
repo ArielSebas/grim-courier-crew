@@ -1,0 +1,15 @@
+﻿{
+  "mcpServers": {
+    "grim-courier-mcp": {
+      "command": "npx",
+      "args": ["tsx", "mcp-server/index.ts"],
+      "disabled": false,
+      "autoApprove": [
+        "analyze_cart_senae",
+        "optimize_split_shipment",
+        "compare_ecuador_couriers",
+        "run_grim_courier_crew"
+      ]
+    }
+  }
+}

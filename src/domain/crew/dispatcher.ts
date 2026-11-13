@@ -49,7 +49,10 @@ export function compareCouriersForBox(box: BoxTaxBreakdown): {
 }
 
 /** Runs Agent 1, Agent 2 and Agent 3 in sequence and returns the combined report. */
-export function runGrimCourierCrew(items: CartItem[]): CrewExecutionReport {
+export function runGrimCourierCrew(
+  items: CartItem[],
+  timestamp: string = '2026-11-13T00:00:00.000Z',
+): CrewExecutionReport {
   const units = expandCartItems(items);
   const totalWeightKg = round2(units.reduce((s, u) => s + u.weightKg, 0));
   const totalFobUsd = round2(units.reduce((s, u) => s + u.priceUsd, 0));
@@ -66,7 +69,7 @@ export function runGrimCourierCrew(items: CartItem[]): CrewExecutionReport {
   );
 
   return {
-    timestamp: new Date().toISOString(),
+    timestamp,
     totalItemsCount: units.length,
     totalWeightKg,
     totalFobUsd,
